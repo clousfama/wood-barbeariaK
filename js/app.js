@@ -101,16 +101,17 @@ Horário: ${time}`;
     e.target.reset();
 });
 
+// Função para gerar horários disponíveis
 function generateTimeSlots() {
-    const select = document.getElementById('timeSlots');
+    const timeSelect = document.getElementById('timeSlots');
+    timeSelect.innerHTML = '<option value="">Selecione um horário</option>';
+    
     const dateInput = document.getElementById('appointmentDate');
     const selectedDate = new Date(dateInput.value);
     const dayOfWeek = selectedDate.getUTCDay();
 
-    select.innerHTML = '<option value="">Selecione um horário</option>';
-
     if (dayOfWeek === 0 || dayOfWeek === 1) {
-        select.innerHTML = '<option value="">Não atendemos aos domingos e segundas-feiras</option>';
+        timeSelect.innerHTML = '<option value="">Não atendemos aos domingos e segundas-feiras</option>';
         return;
     }
 
@@ -119,22 +120,23 @@ function generateTimeSlots() {
     const endTime = isSaturday ? 18 : 20;
 
     for (let hour = startTime; hour < endTime; hour++) {
-        for (let minutes = 0; minutes < 60; minutes += 40) {
-            if (!(hour === endTime - 1 && minutes > 0)) {
-                const timeString = `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-                const option = document.createElement('option');
-                option.value = timeString;
-                option.textContent = timeString;
-                select.appendChild(option);
-            }
+        for (let minute of ['00', '40']) {
+            const time = `${hour.toString().padStart(2, '0')}:${minute}`;
+            const option = document.createElement('option');
+            option.value = time;
+            option.textContent = time;
+            timeSelect.appendChild(option);
         }
     }
 }
 
+// Adicionar event listener para a data
 document.getElementById('appointmentDate').addEventListener('change', generateTimeSlots);
 
-const today = new Date().toISOString().split('T')[0];
-document.getElementById('appointmentDate').min = today;
+// Inicializar os horários quando a página carregar
+document.addEventListener('DOMContentLoaded', () => {
+    generateTimeSlots();
+});
 
 function saveAppointmentToStorage(appointmentData) {
     let appointments = JSON.parse(localStorage.getItem('woodBarbeariaAppointments') || '[]');
@@ -212,3 +214,6 @@ function viewAppointments() {
     
     document.body.insertAdjacentHTML('beforeend', appointmentsHTML);
 }
+
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('appointmentDate').min = today;
