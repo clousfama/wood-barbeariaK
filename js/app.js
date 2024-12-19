@@ -215,5 +215,38 @@ function viewAppointments() {
     document.body.insertAdjacentHTML('beforeend', appointmentsHTML);
 }
 
+function closeAppointmentsModal() {
+    const modal = document.getElementById('appointmentsModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
 const today = new Date().toISOString().split('T')[0];
 document.getElementById('appointmentDate').min = today;
+
+function showPasswordModal() {
+    const modalHTML = `
+        <div class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" id="passwordModal">
+            <div class="bg-white p-4 rounded-lg w-full max-w-md">
+                <h2 class="text-xl font-bold mb-4">Digite a Senha</h2>
+                <input type="password" id="passwordInput" class="border p-2 w-full mb-4" placeholder="Senha">
+                <button id="submitPassword" class="bg-blue-500 text-white px-4 py-2 rounded">Ver Agenda Appointments</button>
+                <button onclick="document.getElementById('passwordModal').remove()" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">Fechar</button>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    // Adicionar evento para o botão de submit
+    document.getElementById('submitPassword').addEventListener('click', () => {
+        const password = document.getElementById('passwordInput').value;
+        // Verifique a senha aqui
+        if (password === 'suaSenhaCorreta') {
+            viewAppointments(); // Chama a função para ver os agendamentos
+            document.getElementById('passwordModal').remove(); // Fecha o modal
+        } else {
+            alert('Senha incorreta!');
+        }
+    });
+}
